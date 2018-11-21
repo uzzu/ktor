@@ -39,11 +39,11 @@ class PublicApiTest(
                 .map { readKotlinVisibilities(it) }
                 .reduce { m1, m2 -> m1 + m2 }
         val api = getBinaryAPI(JarFile(jarFile), visibilities).filterOutNonPublic(nonPublicPackages)
-        api.dumpAndCompareWith(File("reference-public-api").resolve("${moduleName.removeSuffix("-jvm")}.txt"))
+        api.dumpAndCompareWith(File("reference-public-api").resolve("$moduleName.txt"))
     }
 
     private fun getJarPath(libsDir: File): File {
-        val regex = Regex("$moduleName.+\\.jar")
+        val regex = Regex("$moduleName-jvm.+\\.jar")
         val files = (libsDir.listFiles() ?: throw Exception("Cannot list files in $libsDir"))
             .filter {
                 it.name.let {
@@ -51,7 +51,6 @@ class PublicApiTest(
                         && !it.endsWith("-sources.jar")
                         && !it.endsWith("-javadoc.jar")
                         && !it.endsWith("-tests.jar")
-                        && !it.endsWith("-kdoc.jar")
                 }
             }
         return files.singleOrNull()
