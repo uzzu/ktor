@@ -4,7 +4,8 @@ kotlin {
     targets {
         if (project.ext.ideaActive) {
             fromPreset(project.ext.ideaPreset, 'darwin')
-        } else {
+        }
+        if (project.ext.isMacosHost) {
             fromPreset(presets.iosArm64, 'iosArm64')
             fromPreset(presets.iosX64, 'iosX64')
             fromPreset(presets.macosX64, 'macosX64')

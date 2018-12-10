@@ -30,9 +30,6 @@ jvmTest {
     jvmArgs '-ea'
 
     doFirst {
-        def binaryCompatibilityModules = project.ext.buildList() as List<ProjectDependency>
-        def modules = binaryCompatibilityModules.collect { it.dependencyProject.projectDir }
-
         tasks.findByName("test").systemProperty('validator.input.modules', modules.join(File.pathSeparator))
     }
 }

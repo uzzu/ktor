@@ -76,6 +76,8 @@ allprojects {
         }
     }
 
+    configurations { testOutput }
+
     kotlin {
         configure(sourceSets) {
             def srcDir = name.endsWith("Main") ? "src" : "test"
@@ -96,6 +98,4 @@ allprojects {
             }
         }
     }
-
-    configurations { testOutput }
 }
