@@ -31,8 +31,11 @@ apply from: "gradle/experimental.gradle"
  * Don't create `posix` and `darwin` sourceSets in single project.
  */
 def platforms = ["common", "jvm", "js", "posix", "darwin"]
+rootProject.ext.misc = ["binary-compatibility-validator", "ktor-server-benchmarks"]
 
 def projectNeedsPlatform(project, platform) {
+    if (rootProject.ext.misc.contains(project.name)) return platform == "jvm"
+
     def files = project.projectDir.listFiles()
     def hasPosix = files.any { it.name == "posix" }
     def hasDarwin = files.any { it.name == "darwin" }
@@ -62,8 +65,7 @@ allprojects {
     apply plugin: "kotlin-multiplatform"
     apply plugin: "kotlinx-atomicfu"
 
-//    apply from: rootProject.file("gradle/dokka.gradle")
-    if (project.name != 'binary-compatibility-validator') {
+    if (!rootProject.ext.misc.contains(project.name)) {
         apply from: rootProject.file("gradle/utility.gradle")
         apply from: rootProject.file('gradle/publish.gradle')
     }
@@ -77,6 +79,7 @@ allprojects {
     }
 
     configurations { testOutput }
+    if (rootProject.ext.misc.contains(project.name)) return
 
     kotlin {
         configure(sourceSets) {
@@ -91,9 +94,19 @@ allprojects {
                 progressiveMode = true
                 experimentalAnnotations.each { useExperimentalAnnotation(it) }
 
-//                kotlinOptions.freeCompilerArgs += ["-Xdump-declarations-to=${buildDir}/visibilities.json"]
                 if (project.path.startsWith(":ktor-server:ktor-server") && project.name != "ktor-server-core") {
                     useExperimentalAnnotation("io.ktor.server.engine.EngineAPI")
+                }
+            }
+        }
+
+        configure(targets) {
+            def targetName = it.name
+            compilations.all { compilation ->
+                def compileTask = tasks.getByName(compilation.compileKotlinTaskName)
+                compileTask.kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=" + experimentalAnnotations.join(",")]
+                if (targetName.contains("jvm") && compilation.compilationName == "main") {
+                    compileTask.kotlinOptions.freeCompilerArgs += ["-Xdump-declarations-to=${buildDir}/visibilities.json"]
                 }
             }
         }

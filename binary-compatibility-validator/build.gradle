@@ -24,7 +24,6 @@ jvmTest {
 //    dependsOn cleanCompileTestKotlin
     dependsOn configurations.binaryCompatibility
 
-
     systemProperty 'validator.input.modules', modules.join(File.pathSeparator)
     systemProperty 'overwrite.output', project.properties['overwrite.output']
     jvmArgs '-ea'

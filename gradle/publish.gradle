@@ -4,20 +4,9 @@ apply plugin: 'com.jfrog.bintray'
 
 apply from: project.rootProject.file('gradle/pom.gradle')
 
-task sourceJar(type: Jar) {
-    classifier 'sources'
-//        from sourceSets.main.kotlin
-//        duplicatesStrategy DuplicatesStrategy.EXCLUDE
-//        def platformSrc = sourceSets.main.allSource
-//        def commonSrc = rootProject.sourceSets.main.allSource
-//        from(platformSrc + commonSrc)
-}
-
 task emptyJar(type: Jar) {
     classifier 'javadoc'
 }
-
-tasks.build.dependsOn(["sourceJar", "emptyJar"])
 
 publishing {
     repositories {
